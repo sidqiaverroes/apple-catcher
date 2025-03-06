@@ -20,15 +20,23 @@ class GameScene extends Phaser.Scene{
     this.textTime
     this.timedEvent
     this.remainingTime
+    this.coinMusic
+    this.bgMusic
   }
 
   preload(){
     this.load.image("bg", "./public/assets/bg.png")
     this.load.image("apple", "./public/assets/apple.png")
     this.load.image("basket", "./public/assets/basket.png")
+    this.load.audio("coin", "./public/assets/coin.mp3")
+    this.load.audio("bgMusic", "./public/assets/bgMusic.mp3")
   }
 
   create(){
+    this.coinMusic = this.sound.add("coin")
+    this.bgMusic = this.sound.add("bgMusic")
+    this.bgMusic.play()
+
     this.add.image(0,0,"bg").setOrigin(0,0)
     this.target = this.physics.add.image(0,0,"apple").setOrigin(0,0)
     this.player = this.physics.add.image(0, 400,"basket").setOrigin(0,0)
@@ -94,6 +102,7 @@ class GameScene extends Phaser.Scene{
     this.target.setX(this.getRandomX())
     this.points++
     this.textScore.setText(`Score: ${this.points}`)
+    this.coinMusic.play()
   }
 
   gameOver(){
