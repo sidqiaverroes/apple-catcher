@@ -22,12 +22,14 @@ class GameScene extends Phaser.Scene{
     this.remainingTime
     this.coinMusic
     this.bgMusic
+    this.emitter
   }
 
   preload(){
     this.load.image("bg", "./public/assets/bg.png")
     this.load.image("apple", "./public/assets/apple.png")
     this.load.image("basket", "./public/assets/basket.png")
+    this.load.image("money", "./public/assets/money.png")
     this.load.audio("coin", "./public/assets/coin.mp3")
     this.load.audio("bgMusic", "./public/assets/bgMusic.mp3")
   }
@@ -62,6 +64,15 @@ class GameScene extends Phaser.Scene{
     })
 
     this.timedEvent = this.time.delayedCall(30000, this.gameOver, [], this)
+
+    this.emitter = this.add.particles(0,0,"money", {
+      speed: 100,
+      gravityY:speedDown-200,
+      scale: 0.04,
+      duration: 100,
+      emitting: false
+    })
+    this.emitter.startFollow(this.player, this.player.width/2, this.player.height/2, true)
   }
   
   update(){
@@ -103,6 +114,7 @@ class GameScene extends Phaser.Scene{
     this.points++
     this.textScore.setText(`Score: ${this.points}`)
     this.coinMusic.play()
+    this.emitter.start()
   }
 
   gameOver(){
