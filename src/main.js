@@ -6,7 +6,13 @@ const sizes = {
   height: 500,
 }
 
-const speedDown = 300
+const speedDown = 500
+
+const gameStartDiv = document.querySelector("#gameStartDiv")
+const gameStartBtn = document.querySelector("#gameStartBtn")
+const gameEndDiv = document.querySelector("#gameEndDiv")
+const gameWinLoseSpan = document.querySelector("#gameWinLoseSpan")
+const gameEndScoreSpan = document.querySelector("#gameEndScoreSpan")
 
 class GameScene extends Phaser.Scene{
   constructor(){
@@ -35,6 +41,8 @@ class GameScene extends Phaser.Scene{
   }
 
   create(){
+    this.scene.pause("scene-game")
+
     this.coinMusic = this.sound.add("coin")
     this.bgMusic = this.sound.add("bgMusic")
     this.bgMusic.play()
@@ -109,16 +117,34 @@ class GameScene extends Phaser.Scene{
 
   targetHit()
   {
+    this.coinMusic.play()
+    this.emitter.start()
     this.target.setY(0)
     this.target.setX(this.getRandomX())
     this.points++
     this.textScore.setText(`Score: ${this.points}`)
-    this.coinMusic.play()
-    this.emitter.start()
+    // Temporarily disable collisions to avoid multiple hits
+    this.target.disableBody(true, true)
+
+    // Reset position and re-enable after a short delay
+    this.time.delayedCall(100, () => {
+      this.target.setY(0)
+      this.target.setX(this.getRandomX())
+      this.target.enableBody(true, this.target.x, this.target.y, true, true)
+    })
   }
 
   gameOver(){
-    console.log("game over")
+    this.sys.game.destroy(true)
+    if(this.points >=10)
+    {
+      gameWinLoseSpan.textContent = "Win!"
+    }
+    else{
+      gameWinLoseSpan.textContent = "Lose!"
+    }
+    gameEndScoreSpan.textContent = this.points
+    gameEndDiv.style.display = "flex"
   }
 }
 
@@ -138,3 +164,8 @@ const config = {
 }
 
 const game = new Phaser.Game(config)
+
+gameStartBtn.addEventListener("click", ()=>{
+  gameStartDiv.style.display = "none"
+  game.scene.resume("scene-game")
+})
